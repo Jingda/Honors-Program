@@ -1,6 +1,5 @@
 # Honors-Program
 
-# Package: NA
 # Type: Function
 # Title: costmodelofpipeline
 # Version: 0.1.0
