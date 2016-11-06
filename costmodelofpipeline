@@ -1,0 +1,54 @@
+costmodelofpipeline <- function() {
+
+    # This function is used to get result from a general cost model of offshore pipeline construction.
+
+    # set question vector to ask questions of pipeline project
+    question <- c("Enter the cost of pipeland in land (million per mile): ",
+                  "Enter the distance between refinery and shore (miles): ",
+                  "Enter the cost of pipeland off shore (million per mile): ",
+                  "Enter the distance between offshore platform and shore (miles): ",
+                  "Enter the straight distance between refinery and off shore platform (miles): ")
+
+    # set Item vector to make data frame cost_df
+    Item <- c("cost in land (million per mile)",
+              "distance in land (miles)",
+              "cost off shore (million per mile)",
+              "distance off shore (miles)",
+              "straight distance (miles)")
+
+    # set Data vector to record data and to make data frame cost_df
+    Data <- c(0, 0, 0, 0, 0)
+
+    # make data frame
+    cost_df <- data.frame(Item, Data)
+
+    # print question, record data, and check the data if a number one by one
+    for(i in 1:5) {
+
+        print(cost_df[i, "Data"] <- as.double(readline(question[i])))
+
+        while(!is.numeric(cost_df[i, "Data"]) || is.na(cost_df[i, "Data"])) {
+
+            # a joke
+            cat("Was your math taught by gym trainer? :-) Enter a number please...\n")
+            print(cost_df[i, "Data"] <- as.double(readline(question[i])))
+        }
+    }
+
+    # route and cost model
+    cost <- function(x) {
+                
+                cost_df[1, "Data"] * sqrt(cost_df[2, "Data"]^2 + x^2) + cost_df[3, "Data"] * sqrt(cost_df[4, "Data"]^2 
+                + (sqrt(cost_df[5, "Data"]^2 - (cost_df[2, "Data"] + cost_df[4, "Data"])^2) - x)^2)
+    }
+
+    # opimize function does the real work
+    result <- optimize(cost, interval = c(0, sqrt(cost_df[5, "Data"]^2 - (cost_df[2, "Data"] + cost_df[4, "Data"])^2)))
+
+    cat("The data of this pipeline construction project are:\n")
+    print(cost_df)
+
+    # print location and minimal cost of the project separately
+    cat("\nThe pipeline landing location of the most economical route should be at\n", format(round(result$minimum, 3), nsmall = 3),
+        "miles, \nwhich would produce the minimal cost of\n", format(round(result$objective, 3), nsmall = 3), "million US dollars.")
+}
